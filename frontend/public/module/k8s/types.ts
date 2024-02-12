@@ -944,8 +944,13 @@ export type UserInfo = {
   uid?: string;
   username?: string;
   group?: string[];
-  extra?: { [key: string]: string[] };
-}
+  extra?: object;
+};
+
+export type UserKind = {
+  fullName?: string;
+  identities: string[];
+} & K8sResourceCommon;
 
 export type GroupKind = {
   users: string[];

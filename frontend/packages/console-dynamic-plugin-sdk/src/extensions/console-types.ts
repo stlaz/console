@@ -613,17 +613,17 @@ export type SelfSubjectReviewKind = {
   kind: string;
   metadata?: ObjectMetadata;
   status?: {
-    userInfo?: UserInfo
-  }
-}
+    userInfo?: UserInfo;
+  };
+};
 
 // per https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.29/#userinfo-v1-authentication-k8s-io
 export type UserInfo = {
   uid?: string;
   username?: string;
   group?: string[];
-  extra?: { [key: string]: string[] };
-}
+  extra?: object;
+};
 
 export type CodeEditorProps = {
   value?: string;
