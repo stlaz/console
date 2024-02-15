@@ -6,13 +6,11 @@ type SelfSubjectAccessReview {
     status: SelfSubjectAccessReviewStatus!
 }
 
-scalar Object
-
 type UserInfo {
   uid: String!
   username: String!
   groups: [String!]!
-  extra: Object!
+  extra: String!
 }
 
 type SelfSubjectReviewStatus {

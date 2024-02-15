@@ -63,7 +63,22 @@ func parseArgs(args SSARArgs) *auth.ResourceAttributes {
 	return &attr
 }
 
-func (r *K8sResolver) SelfSubjectReview(ctx context.Context) (*authentication.SelfSubjectReview, error) {
+type SelfSubjectReview struct {
+	Status SelfSubjectReviewStatus `json:"status,omitempty"`
+}
+
+type SelfSubjectReviewStatus struct {
+	UserInfo UserInfo `json:"userInfo,omitempty"`
+}
+
+type UserInfo struct {
+	Username string   `json:"username,omitempty"`
+	UID      string   `json:"uid,omitempty"`
+	Groups   []string `json:"groups,omitempty"`
+	Extra    string   `json:"extra,omitempty"`
+}
+
+func (r *K8sResolver) SelfSubjectReview(ctx context.Context) (*SelfSubjectReview, error) {
 	spec := authentication.SelfSubjectReview{}
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(&spec)
@@ -83,7 +98,7 @@ func (r *K8sResolver) SelfSubjectReview(ctx context.Context) (*authentication.Se
 		}
 		return nil, resolverError{Status: result.StatusCode, Message: string(body)}
 	}
-	ssr := authentication.SelfSubjectReview{}
+	ssr := SelfSubjectReview{}
 	err = json.NewDecoder(result.Body).Decode(&ssr)
 	return &ssr, err
 }
