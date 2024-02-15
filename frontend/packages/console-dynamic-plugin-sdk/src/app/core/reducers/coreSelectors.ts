@@ -25,4 +25,9 @@ export const impersonateStateToProps = (state: SDKStoreState) => {
  * @param state the root state
  * @returns The the user state.
  */
-export const getUser: GetUser = (state) => state.sdkCore.user;
+export const getUser: GetUser = (state) => {
+  /* eslint-disable no-console */
+  console.log("!!! STATE !!! - ", state)
+  /* eslint-enable no-console */
+  return state.sdkCore.user;
+}
