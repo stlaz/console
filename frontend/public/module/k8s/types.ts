@@ -944,7 +944,7 @@ export type UserInfo = {
   uid?: string;
   username?: string;
   group?: string[];
-  // extra?: object;
+  extra?: object;
 };
 
 export type UserKind = {
