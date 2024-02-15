@@ -12,8 +12,7 @@ query SSRQuery {
       userInfo {
         uid,
         username,
-        groups,
-        extra
+        groups
       }
     }
   }

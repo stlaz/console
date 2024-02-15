@@ -27,7 +27,7 @@ import {
   SSARQueryVariables,
   SSRQueryType,
 } from '../../@types/console/generated/graphql-schema';
-import { UserInfo } from '@console/internal/module/k8s';
+// import { UserInfo } from '@console/internal/module/k8s';
 // import { SelfSubjectReviewKind } from 'packages/console-dynamic-plugin-sdk/src';
 // import { k8sCreateResource } from '@console/dynamic-plugin-sdk/src/utils/k8s';
 
@@ -214,31 +214,6 @@ const detectCanCreateProject = (dispatch) =>
     },
   );
 
-// const test = '/apis/authentication.k8s.io/v1/selfsubjectreviews';
-
-// const fetchUser = async (): Promise<SelfSubjectReviewKind> =>
-//   await k8sCreateResource({
-//     model: SelfSubjectReviewModel,
-//     data: {
-//       apiVersion: 'authentication.k8s.io/v1',
-//       kind: 'SelfSubjectReview',
-//     },
-//   });
-
-// const detectUser = (dispatch) =>
-//   fetchUser().then(
-//     (selfSubjectReview) => {
-//       console.log("SelfSubjectReview ---> ", selfSubjectReview)
-//       dispatch(setUser(selfSubjectReview.status.userInfo));
-//     },
-//     (err) => {
-//       console.log("SelfSubjectReviewErr ---> ", err)
-//       if (!_.includes([401, 403, 404, 500], err?.response?.status)) {
-//         setTimeout(() => detectUser(dispatch), 15000);
-//       }
-//     },
-//   );
-
 const detectUser = (dispatch: Dispatch) =>
   client
     .query<SSRQueryType>({
@@ -248,20 +223,7 @@ const detectUser = (dispatch: Dispatch) =>
       (res) => {
         /* eslint-disable no-console */
         console.log('---USER---> ', res);
-        const userInfo = res.data.selfSubjectReview.status.userInfo;
-        let newUserInfo: UserInfo;
-        if (userInfo.extra) {
-          try {
-            newUserInfo.extra = JSON.parse(userInfo.extra);
-          } catch (error) {
-            console.error('!!!!Error parsing JSON:', error);
-          }
-        }
-        newUserInfo.group = userInfo.groups;
-        newUserInfo.uid = userInfo.uid;
-        newUserInfo.username = userInfo.username;
-
-        dispatch(setUser(newUserInfo));
+        dispatch(setUser(res.data.selfSubjectReview.status.userInfo));
         /* eslint-enable no-console */
       },
       (err) => {

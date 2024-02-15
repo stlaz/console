@@ -54,9 +54,9 @@ export const applyReduxExtensions = (reducerExtensions: ResolvedExtension<ReduxR
   store.replaceReducer(combineReducers<RootState>(nextReducers));
 };
 
-// if (process.env.NODE_ENV !== 'production') {
-//   // Expose Redux store for debugging
-//   window.store = store;
-// }
+if (process.env.NODE_ENV !== 'production') {
+  // Expose Redux store for debugging
+  window.store = store;
+}
 
 export default store;
