@@ -6,15 +6,17 @@ type SelfSubjectAccessReview {
     status: SelfSubjectAccessReviewStatus!
 }
 
+scalar Object
+
 type UserInfo {
-  uid: ID!
-  username: String!
+  uid: ID
+  username: String
   group: [String]
-  extra: JSON
+  extra: Object
 }
 
 type SelfSubjectReviewStatus {
-    userInfo: UserInfo!
+    userInfo: UserInfo
 }
 
 type SelfSubjectReview {
@@ -24,7 +26,7 @@ type SelfSubjectReview {
 type Query {
     fetchURL(url: String!): String
     selfSubjectAccessReview(group: String, resource: String, verb: String, namespace: String): SelfSubjectAccessReview
-    selfSubjectReview(): SelfSubjectReview
+    selfSubjectReview: SelfSubjectReview
 }
 
 type Subscription {

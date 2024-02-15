@@ -16,15 +16,19 @@ import {
 import { setUser } from '@console/dynamic-plugin-sdk/src/app/core/actions/core';
 import { resolveExtension } from '@console/dynamic-plugin-sdk/src/coderefs/coderef-resolver';
 import store from '../redux';
-import { GroupModel, UserModel, VolumeSnapshotContentModel, SelfSubjectReviewModel } from '../models';
+import { GroupModel, UserModel, VolumeSnapshotContentModel } from '../models';
 import { ClusterVersionKind } from '../module/k8s/types';
 import { receivedResources } from '@console/dynamic-plugin-sdk/src/app/k8s/actions/k8s';
 import { setClusterID, setCreateProjectMessage } from './common';
 import client, { fetchURL } from '../graphql/client';
-import { SSARQuery } from './features.gql';
-import { SSARQueryType, SSARQueryVariables } from '../../@types/console/generated/graphql-schema';
-import { SelfSubjectReviewKind } from 'packages/console-dynamic-plugin-sdk/src';
-import { k8sCreateResource } from '@console/dynamic-plugin-sdk/src/utils/k8s';
+import { SSARQuery, SSRQuery } from './features.gql';
+import {
+  SSARQueryType,
+  SSARQueryVariables,
+  SSRQueryType,
+} from '../../@types/console/generated/graphql-schema';
+// import { SelfSubjectReviewKind } from 'packages/console-dynamic-plugin-sdk/src';
+// import { k8sCreateResource } from '@console/dynamic-plugin-sdk/src/utils/k8s';
 
 export enum ActionType {
   SetFlag = 'setFlag',
@@ -211,48 +215,47 @@ const detectCanCreateProject = (dispatch) =>
 
 // const test = '/apis/authentication.k8s.io/v1/selfsubjectreviews';
 
-const fetchUser = async (): Promise<SelfSubjectReviewKind> =>
-  await k8sCreateResource({
-    model: SelfSubjectReviewModel,
-    data: {
-      apiVersion: 'authentication.k8s.io/v1',
-      kind: 'SelfSubjectReview',
-    },
-  });
+// const fetchUser = async (): Promise<SelfSubjectReviewKind> =>
+//   await k8sCreateResource({
+//     model: SelfSubjectReviewModel,
+//     data: {
+//       apiVersion: 'authentication.k8s.io/v1',
+//       kind: 'SelfSubjectReview',
+//     },
+//   });
 
-const detectUser = (dispatch) =>
-  fetchUser().then(
-    (selfSubjectReview) => {
-      console.log("SelfSubjectReview ---> ", selfSubjectReview)
-      dispatch(setUser(selfSubjectReview.status.userInfo));
-    },
-    (err) => {
-      console.log("SelfSubjectReviewErr ---> ", err)
-      if (!_.includes([401, 403, 404, 500], err?.response?.status)) {
-        setTimeout(() => detectUser(dispatch), 15000);
-      }
-    },
-  );
+// const detectUser = (dispatch) =>
+//   fetchUser().then(
+//     (selfSubjectReview) => {
+//       console.log("SelfSubjectReview ---> ", selfSubjectReview)
+//       dispatch(setUser(selfSubjectReview.status.userInfo));
+//     },
+//     (err) => {
+//       console.log("SelfSubjectReviewErr ---> ", err)
+//       if (!_.includes([401, 403, 404, 500], err?.response?.status)) {
+//         setTimeout(() => detectUser(dispatch), 15000);
+//       }
+//     },
+//   );
 
-// const ssrCheckActions = (dispatch: Dispatch) =>
-//     client
-//       .query<SSARQueryType, SSARQueryVariables>({
-//         query: SSARQuery,
-//         variables: resourceAttributes,
-//       })
-//       .then(
-//         (res) => {
-//           const allowed: boolean = res.data.selfSubjectAccessReview.status.allowed;
-//           dispatch(setFlag(flag, allowed));
-//           if (after) {
-//             after(dispatch, allowed);
-//           }
-//         },
-//         (err) => handleError({ response: err.graphQLErrors[0]?.extensions }, flag, dispatch, fn),
-//       );
-//   return fn;
-// });
-
+const detectUser = (dispatch: Dispatch) =>
+  client
+    .query<SSRQueryType>({
+      query: SSRQuery,
+    })
+    .then(
+      (res) => {
+        /* eslint-disable no-console */
+        console.log('---USER---> ', res);
+        dispatch(setUser(res.data.selfSubjectReview.status.userInfo));
+        /* eslint-enable no-console */
+      },
+      (err) => {
+        /* eslint-disable no-console */
+        console.log('---ERR---> ', err);
+        /* eslint-enable no-console */
+      },
+    );
 
 const ssarCheckActions = ssarChecks.map(({ flag, resourceAttributes, after }) => {
   const fn = (dispatch: Dispatch) =>
